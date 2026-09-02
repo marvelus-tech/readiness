@@ -12,4 +12,5 @@ XAI_API_KEY=xai-...
 
 # xAI Voice Number (get from xAI Voice Agent Builder at https://x.ai/voice)
 # This is provided free when you create a voice agent
+# Displayed on success page; if not set, shows "Number coming soon"
 XAI_VOICE_NUMBER=+1234567890
