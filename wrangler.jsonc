@@ -13,6 +13,7 @@
     }
   ],
   "vars": {
-    "STRIPE_PUBLISHABLE_KEY": "pk_test_placeholder"
+    "STRIPE_PUBLISHABLE_KEY": "pk_test_placeholder",
+    "XAI_VOICE_NUMBER": "+1 (662) 370-3094"
   }
 }

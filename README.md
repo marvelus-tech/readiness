@@ -147,6 +147,12 @@ Or add them to `.dev.vars` for local testing.
 
 ### 4. Configure xAI Voice Agent
 
+**Live Agent Details:**
+- **Name:** AI Readiness Assessment
+- **Voice:** Eve
+- **Phone Number:** +1 (662) 370-3094
+- **HTTP Tools:** Will be configured after Worker deployment (see VOICE_AGENT_SETUP.md)
+
 1. Go to [xAI Voice Agent Builder](https://x.ai/voice)
 2. Create a new agent
 3. Copy and paste the contents of `voice/instructions.md` into the system prompt
