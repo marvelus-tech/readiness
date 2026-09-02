@@ -9,6 +9,8 @@
     {
       "binding": "DB",
       "database_name": "readiness-db",
+      // Local development uses local D1
+      // Production: Replace with actual database_id after running: wrangler d1 create readiness-db
       "database_id": "local"
     }
   ],

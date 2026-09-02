@@ -1,11 +1,9 @@
-import Stripe from 'stripe';
-
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Static assets with Stripe key injection for index.html
+    // Static assets with env var injection for HTML pages
     if (path === '/' || path === '/index.html') {
       const response = await env.ASSETS.fetch(request);
       let html = await response.text();
@@ -20,17 +18,44 @@ export default {
       });
     }
     if (path === '/success' || path === '/success.html') {
-      return env.ASSETS.fetch(new Request(url.origin + '/success.html'));
+      const response = await env.ASSETS.fetch(new Request(url.origin + '/success.html'));
+      let html = await response.text();
+      
+      const voiceNumber = env.XAI_VOICE_NUMBER || 'Number coming soon';
+      html = html.replace('{{XAI_VOICE_NUMBER}}', voiceNumber);
+      
+      return new Response(html, {
+        headers: {
+          'Content-Type': 'text/html;charset=UTF-8',
+        }
+      });
     }
     if (path.startsWith('/static/')) {
       return env.ASSETS.fetch(request);
     }
 
     // API routes
+    // CORS preflight for voice APIs
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Max-Age': '86400',
+        }
+      });
+    }
+
     if (path === '/api/health' && request.method === 'GET') {
       return new Response(JSON.stringify({ status: 'ok', timestamp: Date.now() }), {
         headers: { 'Content-Type': 'application/json' }
       });
+    }
+
+    if (path === '/api/session' && request.method === 'GET') {
+      return handleGetSession(request, env);
     }
 
     if (path === '/api/create-checkout-session' && request.method === 'POST') {
@@ -72,36 +97,36 @@ async function handleCreateCheckout(request, env) {
       });
     }
 
-    const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-06-20',
-    });
-
     const origin = new URL(request.url).origin;
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'aud',
-            product_data: {
-              name: 'AI Readiness Assessment',
-              description: 'Complete AI readiness assessment with phone consultation (18-28 minutes)',
-            },
-            unit_amount: 100000, // $1,000 AUD in cents
-          },
-          quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      customer_email: undefined,
-      billing_address_collection: 'auto',
-      success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/`,
-      metadata: {
-        product: 'ai_readiness_assessment'
-      }
+    // Create Stripe Checkout Session using fetch (no SDK needed)
+    const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        'mode': 'payment',
+        'line_items[0][price_data][currency]': 'aud',
+        'line_items[0][price_data][product_data][name]': 'AI Readiness Assessment',
+        'line_items[0][price_data][product_data][description]': 'Complete AI readiness assessment with phone consultation (18-28 minutes)',
+        'line_items[0][price_data][unit_amount]': '100000',
+        'line_items[0][quantity]': '1',
+        'payment_method_types[0]': 'card',
+        'billing_address_collection': 'auto',
+        'success_url': `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+        'cancel_url': `${origin}/`,
+        'metadata[product]': 'ai_readiness_assessment',
+      }).toString()
     });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Stripe API error: ${error}`);
+    }
+
+    const session = await response.json();
 
     return new Response(JSON.stringify({ sessionId: session.id }), {
       headers: { 'Content-Type': 'application/json' }
@@ -122,20 +147,17 @@ async function handleWebhook(request, env) {
       return new Response('Webhook not configured', { status: 500 });
     }
 
-    const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-06-20',
-    });
-
     const signature = request.headers.get('stripe-signature');
     const body = await request.text();
 
-    let event;
-    try {
-      event = stripe.webhooks.constructEvent(body, signature, env.STRIPE_WEBHOOK_SECRET);
-    } catch (err) {
-      console.error('Webhook signature verification failed:', err.message);
+    // Verify webhook signature using Web Crypto
+    const verified = await verifyStripeSignature(body, signature, env.STRIPE_WEBHOOK_SECRET);
+    if (!verified) {
+      console.error('Webhook signature verification failed');
       return new Response('Webhook signature verification failed', { status: 400 });
     }
+
+    const event = JSON.parse(body);
 
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
@@ -149,7 +171,7 @@ async function handleWebhook(request, env) {
         'INSERT INTO access_codes (code, email, checkout_session_id, paid_at, status) VALUES (?, ?, ?, ?, ?)'
       ).bind(code, email, session.id, Math.floor(Date.now() / 1000), 'unused').run();
 
-      console.log(`Created access code ${code} for ${email}`);
+      console.log(`Created access code ${code} for ${email} (session ${session.id})`);
     }
 
     return new Response(JSON.stringify({ received: true }), {
@@ -162,6 +184,52 @@ async function handleWebhook(request, env) {
       headers: { 'Content-Type': 'application/json' }
     });
   }
+}
+
+// Verify Stripe webhook signature using Web Crypto API (Workers-compatible)
+async function verifyStripeSignature(payload, signatureHeader, secret) {
+  const encoder = new TextEncoder();
+  
+  // Parse signature header (format: t=timestamp,v1=signature)
+  const signatures = signatureHeader.split(',').reduce((acc, part) => {
+    const [key, value] = part.split('=');
+    acc[key] = value;
+    return acc;
+  }, {});
+
+  const timestamp = signatures.t;
+  const expectedSignature = signatures.v1;
+
+  if (!timestamp || !expectedSignature) {
+    return false;
+  }
+
+  // Create signed payload: timestamp.payload
+  const signedPayload = `${timestamp}.${payload}`;
+
+  // Import secret as crypto key
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+
+  // Generate signature
+  const signatureBuffer = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    encoder.encode(signedPayload)
+  );
+
+  // Convert to hex string
+  const computedSignature = Array.from(new Uint8Array(signatureBuffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  // Constant-time comparison
+  return computedSignature === expectedSignature;
 }
 
 async function generateUniqueCode(db) {
@@ -286,6 +354,49 @@ async function handleComplete(request, env) {
     return new Response(JSON.stringify({ error: 'Server error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+    });
+  }
+}
+
+async function handleGetSession(request, env) {
+  try {
+    const url = new URL(request.url);
+    const sessionId = url.searchParams.get('session_id');
+
+    // Require cs_ session id format to prevent leaking emails to random guessers
+    if (!sessionId || !sessionId.startsWith('cs_')) {
+      return new Response(JSON.stringify({ error: 'Invalid session_id format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    const result = await env.DB.prepare(
+      'SELECT code, email, status FROM access_codes WHERE checkout_session_id = ?'
+    ).bind(sessionId).first();
+
+    if (!result) {
+      return new Response(JSON.stringify({ 
+        error: 'Session not found',
+        message: 'Webhook may still be processing. Please wait a moment and refresh.'
+      }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    return new Response(JSON.stringify({
+      code: result.code,
+      email: result.email,
+      status: result.status
+    }), {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch (error) {
+    console.error('Get session error:', error);
+    return new Response(JSON.stringify({ error: 'Server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 }

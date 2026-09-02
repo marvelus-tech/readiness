@@ -19,7 +19,10 @@ The Grok Voice agent (xAI) runs a structured questionnaire that maps where the b
 - **Stack:** Cloudflare Worker + D1 database + static HTML/CSS/JS
 - **Voice Agent:** xAI Grok Voice (`wss://api.x.ai/v1/realtime`, model `grok-voice-latest`, voice `eve`)
 - **Payment:** Stripe Checkout Session (one-time $1,000 AUD)
+  - Uses native fetch + Web Crypto (no Stripe SDK, fully Workers-compatible)
+  - Webhook signature verification via Web Crypto HMAC-SHA256
 - **Webhook:** `checkout.session.completed` mints a 6-digit code
+- **Success page:** Polls `/api/session` for real code (webhook can lag)
 
 ---
 
@@ -56,6 +59,8 @@ STRIPE_PUBLISHABLE_KEY=pk_live_...
 XAI_API_KEY=xai-...
 XAI_VOICE_NUMBER=+1234567890  # Phone number from xAI Voice Agent Builder
 ```
+
+**Important:** `XAI_VOICE_NUMBER` is displayed on the success page. If not set, displays "Number coming soon".
 
 ### Local Development (Test Mode)
 Create a `.dev.vars` file in the project root:
@@ -108,11 +113,13 @@ Copy the `database_id` from the output and update `wrangler.jsonc`:
     {
       "binding": "DB",
       "database_name": "readiness-db",
-      "database_id": "<your-production-database-id>"
+      "database_id": "<paste-your-production-database-id-here>"
     }
   ]
 }
 ```
+
+**Important:** Replace the `database_id: "local"` comment with the actual UUID from the wrangler output.
 
 Then apply the schema:
 
@@ -325,7 +332,7 @@ See `voice/instructions.md` and `voice/question-bank.md` for full details.
 
 ### `POST /api/create-checkout-session`
 
-Creates a Stripe Checkout Session for $1,000 AUD.
+Creates a Stripe Checkout Session for $1,000 AUD. Uses native fetch (no Stripe SDK).
 
 **Response:**
 
@@ -337,7 +344,38 @@ Creates a Stripe Checkout Session for $1,000 AUD.
 
 ### `POST /api/webhook`
 
-Stripe webhook endpoint. Listens for `checkout.session.completed` events and mints 6-digit access codes.
+Stripe webhook endpoint. Listens for `checkout.session.completed` events and mints 6-digit access codes. Verifies webhook signature using Web Crypto HMAC-SHA256.
+
+### `GET /api/session?session_id=cs_...`
+
+Looks up access code by Stripe checkout session ID. Used by success page to poll for the real code after payment (webhook can lag up to ~20 seconds).
+
+**Security:** Requires `session_id` parameter to start with `cs_` to prevent email leakage to random guessers.
+
+**Request:**
+
+```
+GET /api/session?session_id=cs_test_abc123
+```
+
+**Response (found):**
+
+```json
+{
+  "code": "123456",
+  "email": "customer@example.com",
+  "status": "unused"
+}
+```
+
+**Response (not found - webhook still processing):**
+
+```json
+{
+  "error": "Session not found",
+  "message": "Webhook may still be processing. Please wait a moment and refresh."
+}
+```
 
 ### `POST /api/verify-code`
 
@@ -489,6 +527,15 @@ Health check endpoint.
 
 ## Troubleshooting
 
+### Success page shows "Processing Your Payment"
+
+The webhook may take a few seconds to process. The success page polls `/api/session` for up to 20 seconds. If the code still doesn't appear:
+
+1. Check that the webhook endpoint is configured in Stripe Dashboard
+2. Verify `STRIPE_WEBHOOK_SECRET` is set correctly
+3. Check Worker logs: `wrangler tail`
+4. Confirm the webhook event was sent (check Stripe Dashboard > Developers > Webhooks > Events)
+
 ### Stripe Checkout not working
 
 1. Check that `STRIPE_SECRET_KEY` and `STRIPE_PUBLISHABLE_KEY` are set correctly
@@ -512,7 +559,7 @@ Health check endpoint.
 ### D1 database errors
 
 1. Run `npm run db:init` to initialize local database
-2. For production, ensure you've created the database and applied the schema
+2. For production, ensure you've created the database with `wrangler d1 create readiness-db` and updated `wrangler.jsonc` with the real `database_id` (not "local")
 3. Check database binding name in `wrangler.jsonc` matches `DB`
 
 ---

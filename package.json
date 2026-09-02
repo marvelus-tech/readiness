@@ -7,9 +7,6 @@
     "deploy": "wrangler deploy",
     "db:init": "wrangler d1 execute readiness-db --local --file=./schema.sql"
   },
-  "dependencies": {
-    "stripe": "^17.3.1"
-  },
   "devDependencies": {
     "wrangler": "^3.78.12"
   }

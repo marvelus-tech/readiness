@@ -224,50 +224,106 @@
         return;
       }
 
-      try {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        const phoneNumber = 'TO BE PROVIDED';
-        const accessCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-        contentDiv.innerHTML = `
-          <div class="success-icon">✓</div>
-          <h1>Payment Successful</h1>
-          <p class="subtitle">Your AI Readiness Assessment is ready. Call anytime.</p>
-
-          <div class="info-card">
-            <div class="info-label">Call This Number</div>
-            <div class="phone-number">${phoneNumber}</div>
-
-            <div class="info-label">Your Access Code</div>
-            <div class="access-code">${accessCode}</div>
-            <div class="code-subtext">Keep this code private. You'll need it to start the assessment.</div>
-          </div>
-
-          <div class="instructions">
-            <h2>Next steps</h2>
-            <ol>
-              <li>Call <span class="highlight">${phoneNumber}</span> from any phone</li>
-              <li>When prompted, enter your 6-digit access code: <span class="highlight">${accessCode}</span></li>
-              <li>The assessment takes <span class="highlight">18-28 minutes</span></li>
-              <li>Have a pen and paper ready if you like taking notes</li>
-            </ol>
-          </div>
-
-          <div class="note">
-            <strong>Note:</strong> Your access code has been emailed to you (if email sending is configured). You can call anytime within the next 90 days. The phone number is available 24/7.
-          </div>
-        `;
-
-      } catch (error) {
-        console.error('Error loading access details:', error);
+      if (!sessionId.startsWith('cs_')) {
         contentDiv.innerHTML = `
           <div class="error">
-            <h2>Something went wrong</h2>
-            <p>Please contact support at <a href="mailto:okeito.s@gmail.com" style="color: #c45c26;">okeito.s@gmail.com</a></p>
+            <h2>Invalid session ID</h2>
+            <p>The session ID must start with "cs_". Please check your payment confirmation.</p>
           </div>
         `;
+        return;
       }
+
+      const phoneNumber = '{{XAI_VOICE_NUMBER}}' || 'Number coming soon';
+
+      // Poll /api/session for up to 20 seconds (webhook can lag)
+      let attempts = 0;
+      const maxAttempts = 20; // 20 seconds with 1 second intervals
+
+      const pollSession = async () => {
+        try {
+          const response = await fetch(`/api/session?session_id=${sessionId}`);
+          
+          if (response.ok) {
+            const data = await response.json();
+            
+            // Success! Show the real code
+            contentDiv.innerHTML = `
+              <div class="success-icon">✓</div>
+              <h1>Payment Successful</h1>
+              <p class="subtitle">Your AI Readiness Assessment is ready. Call anytime.</p>
+
+              <div class="info-card">
+                <div class="info-label">Call This Number</div>
+                <div class="phone-number">${phoneNumber}</div>
+
+                <div class="info-label">Your Access Code</div>
+                <div class="access-code">${data.code}</div>
+                <div class="code-subtext">Keep this code private. You'll need it to start the assessment.</div>
+              </div>
+
+              <div class="instructions">
+                <h2>Next steps</h2>
+                <ol>
+                  <li>Call <span class="highlight">${phoneNumber}</span> from any phone</li>
+                  <li>When prompted, enter your 6-digit access code: <span class="highlight">${data.code}</span></li>
+                  <li>The assessment takes <span class="highlight">18-28 minutes</span></li>
+                  <li>Have a pen and paper ready if you like taking notes</li>
+                </ol>
+              </div>
+
+              <div class="note">
+                <strong>Note:</strong> You can call anytime within the next 90 days. The phone number is available 24/7.
+              </div>
+            `;
+            return true;
+          } else if (response.status === 404) {
+            // Webhook hasn't processed yet, continue polling
+            attempts++;
+            if (attempts >= maxAttempts) {
+              // After 20 seconds, show wait/retry message
+              contentDiv.innerHTML = `
+                <div class="error">
+                  <h2>Processing Your Payment</h2>
+                  <p>Your payment was successful, but we're still generating your access code.</p>
+                  <p>This usually takes just a few seconds. Please wait a moment and refresh this page.</p>
+                  <p style="margin-top: 1rem;"><button onclick="location.reload()" class="btn" style="display: inline-block; padding: 0.75rem 2rem; font-size: 1rem;">Refresh Page</button></p>
+                  <p style="margin-top: 1rem; font-size: 0.875rem;">If this persists, contact <a href="mailto:okeito.s@gmail.com" style="color: #c45c26;">okeito.s@gmail.com</a> with session ID: ${sessionId}</p>
+                </div>
+              `;
+              return true;
+            }
+            return false; // Continue polling
+          } else {
+            throw new Error('Failed to fetch session');
+          }
+        } catch (error) {
+          console.error('Error polling session:', error);
+          attempts++;
+          if (attempts >= maxAttempts) {
+            contentDiv.innerHTML = `
+              <div class="error">
+                <h2>Unable to Load Access Code</h2>
+                <p>We're having trouble retrieving your access code right now.</p>
+                <p style="margin-top: 1rem;"><button onclick="location.reload()" class="btn" style="display: inline-block; padding: 0.75rem 2rem; font-size: 1rem;">Try Again</button></p>
+                <p style="margin-top: 1rem; font-size: 0.875rem;">If this persists, contact <a href="mailto:okeito.s@gmail.com" style="color: #c45c26;">okeito.s@gmail.com</a></p>
+              </div>
+            `;
+            return true;
+          }
+          return false; // Continue polling
+        }
+      };
+
+      // Start polling
+      const poll = async () => {
+        const done = await pollSession();
+        if (!done) {
+          setTimeout(poll, 1000); // Poll every 1 second
+        }
+      };
+
+      poll();
     }
 
     loadAccessDetails();
