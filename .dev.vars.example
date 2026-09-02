@@ -1,0 +1,15 @@
+# Copy this to .dev.vars and fill in your test/dev keys
+
+# Stripe Test Keys (get from https://dashboard.stripe.com/test/apikeys)
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+
+# Stripe Webhook Secret (get from Stripe CLI: stripe listen --forward-to localhost:8787/api/webhook)
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# xAI API Key (get from https://x.ai)
+XAI_API_KEY=xai-...
+
+# xAI Voice Number (get from xAI Voice Agent Builder at https://x.ai/voice)
+# This is provided free when you create a voice agent
+XAI_VOICE_NUMBER=+1234567890
