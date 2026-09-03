@@ -1,0 +1,85 @@
+{
+  "type": "session.update",
+  "session": {
+    "modalities": ["audio", "text"],
+    "voice": "eve",
+    "instructions": "See instructions.md for full system prompt. You are a curious consultant conducting AI readiness assessments. Always verify the access code first using verify_code tool. Never recommend specific tools. Quantify hours, dollars, frequency. Save answers using save_answer tool. Mark complete using complete_assessment tool.",
+    "input_audio_format": "pcm16",
+    "output_audio_format": "pcm16",
+    "temperature": 0.7,
+    "max_response_output_tokens": 4096,
+    "turn_detection": {
+      "type": "server_vad",
+      "threshold": 0.5,
+      "prefix_padding_ms": 300,
+      "silence_duration_ms": 700
+    },
+    "tools": [
+      {
+        "type": "function",
+        "name": "verify_code",
+        "description": "Verify a 6-digit access code at the beginning of the call. Must be called first before proceeding with assessment.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "The 6-digit access code provided by the caller"
+            }
+          },
+          "required": ["code"]
+        }
+      },
+      {
+        "type": "function",
+        "name": "save_answer",
+        "description": "Save a customer's answer to a question. Call this after each substantial answer or cluster of related answers.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "The verified 6-digit access code"
+            },
+            "phase": {
+              "type": "string",
+              "description": "The phase of the assessment (e.g., 'Phase 1: Business DNA', 'Phase 2: Customer Journey')",
+              "enum": [
+                "Phase 1: Business DNA",
+                "Phase 2: Customer Journey & Operations",
+                "Phase 3: Hidden Labor",
+                "Phase 4: Investment Lens",
+                "Phase 5: Industry Probes"
+              ]
+            },
+            "question": {
+              "type": "string",
+              "description": "The question that was asked"
+            },
+            "answer": {
+              "type": "string",
+              "description": "The customer's answer, captured verbatim or summarized accurately"
+            }
+          },
+          "required": ["code", "phase", "question", "answer"]
+        }
+      },
+      {
+        "type": "function",
+        "name": "complete_assessment",
+        "description": "Mark the assessment as complete. Call this at the very end after all questions have been answered and saved.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "The verified 6-digit access code"
+            }
+          },
+          "required": ["code"]
+        }
+      }
+    ],
+    "tool_choice": "auto"
+  }
+}

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your AI Readiness Assessment Access Code</title>
+  <meta name="description" content="Access code for your AI readiness phone assessment. Call anytime to begin your 18-28 minute consultation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      background-color: #14110e;
+      color: #f3ece3;
+      line-height: 1.7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem;
+    }
+
+    h1, h2 {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 2rem;
+      background-color: #c45c26;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      color: #f3ece3;
+    }
+
+    .subtitle {
+      font-size: 1.125rem;
+      color: #9a9186;
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .info-card {
+      background-color: rgba(196, 92, 38, 0.08);
+      border: 2px solid #c45c26;
+      padding: 2.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+
+    .info-label {
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #9a9186;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .phone-number {
+      font-family: 'Fraunces', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #c45c26;
+      margin-bottom: 2rem;
+      word-break: break-all;
+    }
+
+    .access-code {
+      font-family: 'Fraunces', serif;
+      font-size: 4rem;
+      font-weight: 700;
+      color: #c45c26;
+      letter-spacing: 0.25em;
+      text-align: center;
+      padding: 1rem;
+      background-color: rgba(243, 236, 227, 0.05);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .code-subtext {
+      font-size: 0.875rem;
+      color: #9a9186;
+      text-align: center;
+    }
+
+    .instructions {
+      margin-top: 2rem;
+    }
+
+    .instructions h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #f3ece3;
+    }
+
+    .instructions ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .instructions li {
+      font-size: 1.125rem;
+      color: #9a9186;
+      margin-bottom: 0.75rem;
+    }
+
+    .highlight {
+      color: #c45c26;
+      font-weight: 600;
+    }
+
+    .note {
+      background-color: rgba(154, 145, 134, 0.1);
+      padding: 1.5rem;
+      border-radius: 6px;
+      margin-top: 2rem;
+      font-size: 1rem;
+      color: #9a9186;
+    }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(154, 145, 134, 0.2);
+      text-align: center;
+      color: #9a9186;
+      font-size: 0.875rem;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #9a9186;
+    }
+
+    .error {
+      background-color: rgba(196, 92, 38, 0.15);
+      border: 1px solid #c45c26;
+      padding: 1.5rem;
+      border-radius: 6px;
+      color: #c45c26;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1.5rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .phone-number {
+        font-size: 1.75rem;
+      }
+
+      .access-code {
+        font-size: 2.5rem;
+        letter-spacing: 0.15em;
+      }
+
+      .info-card {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="content">
+      <div class="loading">
+        <p>Loading your access details...</p>
+      </div>
+    </div>
+
+    <footer>
+      <p>Questions? Email <a href="mailto:okeito.s@gmail.com" style="color: #c45c26; text-decoration: none;">okeito.s@gmail.com</a></p>
+    </footer>
+  </div>
+
+  <script>
+    async function loadAccessDetails() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get('session_id');
+      const contentDiv = document.getElementById('content');
+
+      if (!sessionId) {
+        contentDiv.innerHTML = `
+          <div class="error">
+            <h2>No session ID found</h2>
+            <p>Please complete the checkout process first.</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (!sessionId.startsWith('cs_')) {
+        contentDiv.innerHTML = `
+          <div class="error">
+            <h2>Invalid session ID</h2>
+            <p>The session ID must start with "cs_". Please check your payment confirmation.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const phoneNumber = '{{XAI_VOICE_NUMBER}}' || 'Number coming soon';
+
+      // Poll /api/session for up to 20 seconds (webhook can lag)
+      let attempts = 0;
+      const maxAttempts = 20; // 20 seconds with 1 second intervals
+
+      const pollSession = async () => {
+        try {
+          const response = await fetch(`/api/session?session_id=${sessionId}`);
+          
+          if (response.ok) {
+            const data = await response.json();
+            
+            // Success! Show the real code
+            contentDiv.innerHTML = `
+              <div class="success-icon">✓</div>
+              <h1>Payment Successful</h1>
+              <p class="subtitle">Your AI Readiness Assessment is ready. Call anytime.</p>
+
+              <div class="info-card">
+                <div class="info-label">Call This Number</div>
+                <div class="phone-number">${phoneNumber}</div>
+
+                <div class="info-label">Your Access Code</div>
+                <div class="access-code">${data.code}</div>
+                <div class="code-subtext">Keep this code private. You'll need it to start the assessment.</div>
+              </div>
+
+              <div class="instructions">
+                <h2>Next steps</h2>
+                <ol>
+                  <li>Call <span class="highlight">${phoneNumber}</span> from any phone</li>
+                  <li>When prompted, enter your 6-digit access code: <span class="highlight">${data.code}</span></li>
+                  <li>The assessment takes <span class="highlight">18-28 minutes</span></li>
+                  <li>Have a pen and paper ready if you like taking notes</li>
+                </ol>
+              </div>
+
+              <div class="note">
+                <strong>Note:</strong> You can call anytime within the next 90 days. The phone number is available 24/7.
+              </div>
+            `;
+            return true;
+          } else if (response.status === 404) {
+            // Webhook hasn't processed yet, continue polling
+            attempts++;
+            if (attempts >= maxAttempts) {
+              // After 20 seconds, show wait/retry message
+              contentDiv.innerHTML = `
+                <div class="error">
+                  <h2>Processing Your Payment</h2>
+                  <p>Your payment was successful, but we're still generating your access code.</p>
+                  <p>This usually takes just a few seconds. Please wait a moment and refresh this page.</p>
+                  <p style="margin-top: 1rem;"><button onclick="location.reload()" class="btn" style="display: inline-block; padding: 0.75rem 2rem; font-size: 1rem;">Refresh Page</button></p>
+                  <p style="margin-top: 1rem; font-size: 0.875rem;">If this persists, contact <a href="mailto:okeito.s@gmail.com" style="color: #c45c26;">okeito.s@gmail.com</a> with session ID: ${sessionId}</p>
+                </div>
+              `;
+              return true;
+            }
+            return false; // Continue polling
+          } else {
+            throw new Error('Failed to fetch session');
+          }
+        } catch (error) {
+          console.error('Error polling session:', error);
+          attempts++;
+          if (attempts >= maxAttempts) {
+            contentDiv.innerHTML = `
+              <div class="error">
+                <h2>Unable to Load Access Code</h2>
+                <p>We're having trouble retrieving your access code right now.</p>
+                <p style="margin-top: 1rem;"><button onclick="location.reload()" class="btn" style="display: inline-block; padding: 0.75rem 2rem; font-size: 1rem;">Try Again</button></p>
+                <p style="margin-top: 1rem; font-size: 0.875rem;">If this persists, contact <a href="mailto:okeito.s@gmail.com" style="color: #c45c26;">okeito.s@gmail.com</a></p>
+              </div>
+            `;
+            return true;
+          }
+          return false; // Continue polling
+        }
+      };
+
+      // Start polling
+      const poll = async () => {
+        const done = await pollSession();
+        if (!done) {
+          setTimeout(poll, 1000); // Poll every 1 second
+        }
+      };
+
+      poll();
+    }
+
+    loadAccessDetails();
+  </script>
+</body>
+</html>
