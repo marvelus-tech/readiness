@@ -1,0 +1,19 @@
+{
+  "name": "readiness",
+  "main": "src/worker.js",
+  "compatibility_date": "2024-09-02",
+  "assets": {
+    "directory": "public"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "readiness-db",
+      "database_id": "41391869-5d2b-43b1-830b-47c1ea7101fc"
+    }
+  ],
+  "vars": {
+    "STRIPE_PUBLISHABLE_KEY": "pk_test_placeholder",
+    "XAI_VOICE_NUMBER": "+1 (662) 370-3094"
+  }
+}
