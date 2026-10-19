@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operational Assessment | MarvelUs</title>
+  <meta name="description" content="A 20-minute Operational Assessment maps hidden workflow costs, wasted time, and growth constraints into clear numbers. $1,000 AUD, paid once via Stripe.">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://marvelus-tech.github.io/readiness/">
+  <meta property="og:title" content="Operational Assessment | MarvelUs">
+  <meta property="og:description" content="A 20-minute Operational Assessment maps hidden workflow costs, wasted time, and growth constraints into clear numbers. $1,000 AUD, paid once via Stripe.">
+  <meta property="og:locale" content="en_AU">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Operational Assessment | MarvelUs">
+  <meta name="twitter:description" content="A 20-minute Operational Assessment maps hidden workflow costs, wasted time, and growth constraints into clear numbers. $1,000 AUD, paid once via Stripe.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --paper: #fdfcfa;
+      --ink: #1a1816;
+      --charcoal: #3d3935;
+      --ash: #8b857d;
+      --warm-white: #f7f5f2;
+      --accent: #b85c38;
+      --accent-muted: #d89272;
+      --serif: 'Cormorant', Georgia, serif;
+      --sans: 'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .container { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      padding: 120px 0 80px;
+      background: linear-gradient(135deg, transparent 0%, rgba(184, 92, 56, 0.02) 100%);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      top: 15%;
+      right: 8%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(184, 92, 56, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-content { position: relative; z-index: 1; }
+    .hero-eyebrow {
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 32px;
+      display: inline-block;
+    }
+
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(52px, 7.5vw, 96px);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.015em;
+      margin-bottom: 32px;
+      color: var(--ink);
+    }
+
+    .hero h1 strong { font-weight: 600; font-style: italic; }
+    .hero-lede {
+      font-size: clamp(20px, 2.2vw, 26px);
+      line-height: 1.45;
+      color: var(--charcoal);
+      margin-bottom: 48px;
+      max-width: 680px;
+      font-weight: 400;
+    }
+
+    .cta-primary {
+      display: inline-block;
+      padding: 20px 48px;
+      background: var(--accent);
+      color: var(--paper);
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid var(--accent);
+    }
+
+    .cta-primary:hover {
+      background: #9a4d2f;
+      border-color: #9a4d2f;
+      transform: translateY(-2px);
+    }
+
+    .cta-primary:focus { outline: 2px solid var(--accent); outline-offset: 4px; }
+    .price { display: block; margin-top: 16px; font-size: 15px; color: var(--ash); font-weight: 500; }
+    .section { padding: 120px 0; border-top: 1px solid rgba(59, 57, 53, 0.1); }
+    .section-header { max-width: 720px; margin: 0 auto 80px; text-align: center; }
+    .section-number {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--accent);
+      margin-bottom: 20px;
+      position: relative;
+      display: inline-block;
+      padding-left: 32px;
+    }
+
+    .section-number::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 1px;
+      background: var(--accent-muted);
+    }
+
+    .section h2 {
+      font-family: var(--serif);
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      margin-bottom: 24px;
+      color: var(--ink);
+    }
+
+    .section-intro { font-size: 19px; line-height: 1.6; color: var(--charcoal); max-width: 640px; margin: 0 auto; }
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 48px 56px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .why-item { position: relative; padding-left: 24px; }
+    .why-item::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 3px;
+      height: 48px;
+      background: linear-gradient(180deg, var(--accent), var(--accent-muted));
+      opacity: 0.4;
+    }
+
+    .why-item h3 { font-family: var(--serif); font-size: 28px; font-weight: 500; margin-bottom: 16px; color: var(--ink); }
+    .why-item p { font-size: 17px; line-height: 1.65; color: var(--charcoal); }
+    .what-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      max-width: 1100px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    .what-list { list-style: none; }
+    .what-list li {
+      padding: 32px 0 32px 48px;
+      border-bottom: 1px solid rgba(59, 57, 53, 0.08);
+      font-size: 18px;
+      line-height: 1.55;
+      color: var(--charcoal);
+      position: relative;
+      transition: 0.3s;
+    }
+
+    .what-list li:first-child { border-top: 1px solid rgba(59, 57, 53, 0.08); }
+    .what-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 46px;
+      width: 20px;
+      height: 1px;
+      background: var(--accent-muted);
+      color: var(--accent-muted);
+      font-weight: 300;
+      font-size: 24px;
+      transition: 0.3s;
+    }
+
+    .what-list li:hover { padding-left: 56px; }
+    .what-list li:hover::before { background: var(--accent); left: 8px; }
+    .what-list strong { color: var(--ink); font-weight: 600; display: block; margin-bottom: 4px; font-size: 19px; }
+    .what-sidebar { position: sticky; top: 120px; }
+    .what-sidebar h3 { font-family: var(--serif); font-size: 32px; font-weight: 400; margin-bottom: 20px; color: var(--ink); }
+    .what-sidebar p { font-size: 17px; line-height: 1.65; color: var(--ash); margin-bottom: 32px; }
+    .steps { max-width: 800px; margin: 0 auto; }
+    .step { display: grid; grid-template-columns: 80px 1fr; gap: 32px; margin-bottom: 64px; align-items: start; }
+    .step-number { font-family: var(--serif); font-size: 72px; font-weight: 300; color: var(--accent-muted); line-height: 1; }
+    .step-content h3 { font-family: var(--serif); font-size: 32px; font-weight: 500; margin-bottom: 12px; color: var(--ink); }
+    .step-content p { font-size: 17px; line-height: 1.65; color: var(--charcoal); }
+    .objections { max-width: 900px; margin: 0 auto; }
+    .objection { margin-bottom: 56px; padding-bottom: 56px; border-bottom: 1px solid rgba(59, 57, 53, 0.08); }
+    .objection:last-child { border-bottom: none; }
+    .objection h3 { font-family: var(--serif); font-size: 26px; font-weight: 500; font-style: italic; margin-bottom: 16px; color: var(--ash); }
+    .objection p { font-size: 18px; line-height: 1.65; color: var(--charcoal); }
+    .final-cta { text-align: center; padding: 140px 0; background: var(--warm-white); }
+    .final-cta h2 {
+      font-family: var(--serif);
+      font-size: clamp(42px, 6vw, 72px);
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 32px;
+      color: var(--ink);
+    }
+
+    .final-cta .cta-primary { margin-top: 16px; }
+    .footer { padding: 64px 0; border-top: 1px solid rgba(59, 57, 53, 0.1); text-align: center; }
+    .footer p { font-size: 15px; color: var(--ash); line-height: 1.7; }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 768px) {
+      .container { padding: 0 24px; }
+      .hero { padding: 80px 0 60px; min-height: auto; }
+      .section { padding: 80px 0; }
+      .what-grid { grid-template-columns: 1fr; gap: 48px; }
+      .what-sidebar { position: static; }
+      .step { grid-template-columns: 60px 1fr; gap: 20px; margin-bottom: 48px; }
+      .step-number { font-size: 56px; }
+      .cta-primary { padding: 18px 36px; font-size: 15px; }
+      .final-cta { padding: 80px 0; }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 40px; }
+      .hero-lede { font-size: 18px; }
+      .section h2 { font-size: 32px; }
+      .why-grid { gap: 40px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <span class="hero-eyebrow">Operational Assessment</span>
+        <h1>Where does your business <strong>leak time and money?</strong></h1>
+        <p class="hero-lede">
+          A 20-minute diagnostic conversation turns hidden operational costs into numbers. See where time disappears, where money leaks, and what holds growth back. No vendor pitch. No tool recommendations. Just clarity.
+        </p>
+        <a href="https://readiness.marvelus.workers.dev/" class="cta-primary">Buy the Assessment: $1,000 AUD</a>
+        <span class="price">One call. One code. No calendar booking required.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-number">01</div>
+        <h2>A conversation, not a form</h2>
+        <p class="section-intro">
+          Forms collect fixed answers. A guided diagnostic conversation follows the thread, so each answer shapes the next question and reveals what sits behind the symptoms.
+        </p>
+      </div>
+      <div class="why-grid">
+        <div class="why-item">
+          <h3>Follow the thread</h3>
+          <p>
+            Mention chasing invoices and the next questions uncover how often it happens, who handles it, and what gets delayed. A form cannot follow that thread.
+          </p>
+        </div>
+        <div class="why-item">
+          <h3>Map the real workflow</h3>
+          <p>
+            Symptoms point to the starting place. The diagnostic traces the work behind them to find where time disappears, errors happen, and money leaks.
+          </p>
+        </div>
+        <div class="why-item">
+          <h3>Put a number on it</h3>
+          <p>
+            "Admin takes forever" becomes "18 hours per week at $50 per hour equals $46,800 annually." Numbers make the cost visible and decisions easier.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-number">02</div>
+        <h2>What the 18 to 28 minutes uncovers</h2>
+      </div>
+      <div class="what-grid">
+        <ul class="what-list">
+          <li><strong>Revenue operations:</strong> How leads arrive, how quickly you respond, where follow-up fails, and what percentage converts.</li>
+          <li><strong>Fulfilment friction:</strong> What happens between "sold" and "delivered," where rework starts, and where customers wait.</li>
+          <li><strong>Hidden labour:</strong> The $50 per hour tasks eating your week, from email ping-pong and data entry to document chasing and repeated proposals.</li>
+          <li><strong>Financial baseline:</strong> Current software spend, the hourly value of your time, and the value of putting 10 hours back in your calendar.</li>
+          <li><strong>Growth constraints:</strong> What breaks if volume doubles, what you would hire for next, and what keeps you working weekends.</li>
+        </ul>
+        <div class="what-sidebar">
+          <h3>Not a sales call</h3>
+          <p>
+            This is a diagnostic, not a transaction. There is no vendor pitch and no list of tools to buy. You leave with clarity about the costs inside your operation, not a proposal.
+          </p>
+          <a href="https://readiness.marvelus.workers.dev/" class="cta-primary">Start the Assessment</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-number">03</div>
+        <h2>How it works</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Pay once via Stripe</h3>
+            <p>
+              $1,000 AUD. One-time payment. Checkout takes 60 seconds. No subscription, no recurring charge.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Get your number and code</h3>
+            <p>
+              After payment, you receive a shared call-in number and a unique 6-digit access code. Save them. No calendar, no booking link.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Call when you are ready</h3>
+            <p>
+              Dial <strong>+1 (662) 370-3094</strong>. Enter your code and begin the assessment call. The guided diagnostic conversation runs for about 18 to 28 minutes.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h3>Walk away with clarity</h3>
+            <p>
+              Afterwards, you have the conversation transcript and your operational leaks expressed as numbers, so you can see what deserves attention first.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-number">04</div>
+        <h2>Common questions</h2>
+      </div>
+      <div class="objections">
+        <div class="objection">
+          <h3>"I do not have 20 minutes."</h3>
+          <p>
+            If you are working weekends, chasing invoices, or repeating the same admin every week, you are already spending the time. The diagnostic shows where it goes and what recovering it could be worth.
+          </p>
+        </div>
+        <div class="objection">
+          <h3>"We already have tools."</h3>
+          <p>
+            Tools do not diagnose workflow. A business can have project management software, chat, and a CRM while still losing 15 hours a week to coordination. The assessment finds the operational pattern, not a software gap.
+          </p>
+        </div>
+        <div class="objection">
+          <h3>"What about privacy?"</h3>
+          <p>
+            Your answers stay with you. We do not sell, share, or repurpose your business data. The transcript is yours, and the conversation is used to complete the diagnostic.
+          </p>
+        </div>
+        <div class="objection">
+          <h3>"What if I do not get value?"</h3>
+          <p>
+            The value is a clear financial baseline for problems that usually stay vague. Finding one $46,000 per year time leak can make the cost of inaction visible and give you a practical place to start.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="container">
+      <h2>See where the money goes.<br>One call. One code. $1,000 AUD.</h2>
+      <a href="https://readiness.marvelus.workers.dev/" class="cta-primary">Buy the Operational Assessment</a>
+      <span class="price">Call anytime after purchase. No calendar required.</span>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>
+        Operational Assessment by MarvelUs<br>
+        Melbourne, Australia<br>
+        Questions? <a href="mailto:okeito.s@gmail.com">okeito.s@gmail.com</a>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>

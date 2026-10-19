@@ -109,8 +109,8 @@ async function handleCreateCheckout(request, env) {
       body: new URLSearchParams({
         'mode': 'payment',
         'line_items[0][price_data][currency]': 'aud',
-        'line_items[0][price_data][product_data][name]': 'AI Readiness Assessment',
-        'line_items[0][price_data][product_data][description]': 'Complete AI readiness assessment with phone consultation (18-28 minutes)',
+        'line_items[0][price_data][product_data][name]': 'Operational Assessment',
+        'line_items[0][price_data][product_data][description]': 'Guided operational diagnostic conversation (18 to 28 minutes)',
         'line_items[0][price_data][unit_amount]': '100000',
         'line_items[0][quantity]': '1',
         'payment_method_types[0]': 'card',

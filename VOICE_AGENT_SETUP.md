@@ -20,7 +20,7 @@ Click "Create New Agent" or similar option.
 
 ### 3. Basic Configuration
 
-- **Name:** AI Readiness Assessment Consultant
+- **Name:** Operational Assessment
 - **Voice:** `eve` (select from dropdown)
 - **Model:** `grok-voice-latest` (select from dropdown)
 

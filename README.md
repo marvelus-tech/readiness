@@ -1,14 +1,14 @@
-# AI Readiness Assessment
+# Operational Assessment
 
 **Owner:** O'keito S., Melbourne  
 **Email:** okeito.s@gmail.com
 
 ## Product Overview
 
-Businesses pay **$1,000 AUD** via Stripe Checkout for an AI Readiness Assessment. After payment, they receive:
+Businesses pay **$1,000 AUD** via Stripe Checkout for an Operational Assessment. After payment, they receive:
 - A phone number to call (via xAI Voice Agent)
 - A unique 6-digit access code
-- 18-28 minute consultation with a curious consultant (not a salesperson)
+- 18 to 28 minute guided diagnostic conversation
 
 The Grok Voice agent (xAI) runs a structured questionnaire that maps where the business leaks time and money. All answers are stored as JSON; no $1,000 PDF report is generated.
 
@@ -148,8 +148,8 @@ Or add them to `.dev.vars` for local testing.
 ### 4. Configure xAI Voice Agent
 
 **Live Agent Details:**
-- **Name:** AI Readiness Assessment
-- **Voice:** Eve
+- **Name:** Operational Assessment
+- **Voice ID:** `eve`
 - **Phone Number:** +1 (662) 370-3094
 - **HTTP Tools:** Will be configured after Worker deployment (see VOICE_AGENT_SETUP.md)
 

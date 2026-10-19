@@ -1,6 +1,6 @@
-# AI Readiness Assessment Question Bank
+# Operational Assessment Question Bank
 
-This document provides the complete set of questions for the AI Readiness Assessment, organized by phase. Use these as your guide, but adapt based on the conversation flow.
+This document provides the complete set of questions for the Operational Assessment, organized by phase. Use these as your guide, but adapt based on the conversation flow.
 
 ---
 
